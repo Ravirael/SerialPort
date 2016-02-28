@@ -1,11 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "hexstring.h"
+
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->terminatorHexEdit->setValidator(new QRegExpValidator(QRegExp(R"(0x[\d(A-F|a-f)]{1,2} 0x[\d(A-F|a-f)]{1,2})")));
     on_actionRefresh_ports_triggered();
     setupComboBoxes();
 }
@@ -41,6 +46,12 @@ void MainWindow::setupComboBoxes()
     ui->parityCB->setMapping({{"No parity", SerialPort::NoParity},
                               {"Even",      SerialPort::EvenParity},
                               {"Odd",       SerialPort::OddParity}});
+
+    ui->terminatorCB->setMapping({{"Custom", ""},
+                                  {"CR", "0x0D"},
+                                  {"LF", "0x0A"},
+                                  {"CR LF", "0x0D 0x0A"}});
+
 }
 
 void MainWindow::on_actionRefresh_ports_triggered()
@@ -54,4 +65,31 @@ void MainWindow::on_actionRefresh_ports_triggered()
     }
 
     ui->serialPortInfoCB->setMapping(portsMapping);
+}
+
+void MainWindow::on_terminatorASCIIEdit_textEdited(const QString &str)
+{
+    ui->terminatorHexEdit->setText(HexString::toHex(str.toStdString()).c_str());
+}
+
+void MainWindow::on_terminatorHexEdit_textEdited(const QString &str)
+{
+    ui->terminatorASCIIEdit->setText(HexString::fromHex(str.toStdString()).c_str());
+}
+
+void MainWindow::on_terminatorCB_currentIndexChanged(int index)
+{
+    bool disable = false;
+
+    ui->terminatorHexEdit->clear();
+    ui->terminatorASCIIEdit->clear();
+
+    if (!ui->terminatorCB->currentElement().empty())
+    {
+        ui->terminatorHexEdit->setText(ui->terminatorCB->currentElement().c_str());
+        disable = true;
+    }
+
+    ui->terminatorASCIIEdit->setDisabled(disable);
+    ui->terminatorHexEdit->setDisabled(disable);
 }

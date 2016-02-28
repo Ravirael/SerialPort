@@ -29,12 +29,12 @@ public:
 
     T currentElement() const
     {
-        return elementAt(index);
+        return elementAt(currentIndex());
     }
 
     T elementAt(unsigned index) const
     {
-        return mapping[index];
+        return mapping[index].second;
     }
 
 private:

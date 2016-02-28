@@ -15,10 +15,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    serialport.cpp
+    serialport.cpp \
+    hexstring.cpp
 
 HEADERS  += mainwindow.h \
     serialport.h \
-    mappedcombobox.h
+    mappedcombobox.h \
+    hexstring.h
 
 FORMS    += mainwindow.ui

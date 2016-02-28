@@ -18,6 +18,12 @@ public:
 private slots:
     void on_actionRefresh_ports_triggered();
 
+    void on_terminatorASCIIEdit_textEdited(const QString &arg1);
+
+    void on_terminatorHexEdit_textEdited(const QString &arg1);
+
+    void on_terminatorCB_currentIndexChanged(int index);
+
 private:
     void setupComboBoxes();
 

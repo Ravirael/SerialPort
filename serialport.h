@@ -22,10 +22,9 @@ public:
 
     void setFlowControl(FlowControl flowControl);
 
-protected:
-    virtual qint64 readData(char *data, qint64 maxSize) override;
-    virtual qint64 readLineData(char *data, qint64 maxSize) override;
-    virtual qint64 writeData(const char *data, qint64 maxSize) override;
+#ifdef Q_OS_WIN32
+    bool getDcb(DCB *dcb);
+#endif
 
 
 private:
