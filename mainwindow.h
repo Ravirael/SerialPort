@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QRegExpValidator>
+#include "serialport.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,10 +26,17 @@ private slots:
 
     void on_terminatorCB_currentIndexChanged(int index);
 
+    void on_sendButton_clicked();
+
 private:
     void setupComboBoxes();
 
     Ui::MainWindow *ui;
+    SerialPort serialPort;
+
+    QRegExpValidator hexValidator;
+    QIntValidator intValidator;
+
 };
 
 #endif // MAINWINDOW_H

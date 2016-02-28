@@ -7,10 +7,14 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    hexValidator(QRegExp(R"(0x[\d(A-F|a-f)]{1,2} 0x[\d(A-F|a-f)]{1,2})"))
+
 {
     ui->setupUi(this);
-    ui->terminatorHexEdit->setValidator(new QRegExpValidator(QRegExp(R"(0x[\d(A-F|a-f)]{1,2} 0x[\d(A-F|a-f)]{1,2})")));
+    intValidator.setRange(QSerialPort::Baud1200, QSerialPort::Baud115200);
+    ui->terminatorHexEdit->setValidator(&hexValidator);
+    ui->baudRateCB->setValidator(&intValidator);
     on_actionRefresh_ports_triggered();
     setupComboBoxes();
 }
@@ -92,4 +96,24 @@ void MainWindow::on_terminatorCB_currentIndexChanged(int index)
 
     ui->terminatorASCIIEdit->setDisabled(disable);
     ui->terminatorHexEdit->setDisabled(disable);
+}
+
+void MainWindow::on_sendButton_clicked()
+{
+    if (ui->serialPortInfoCB->currentIndex() > 0)
+        serialPort.setPort(ui->serialPortInfoCB->currentElement());
+    serialPort.open(SerialPort::WriteOnly);
+    serialPort.setParity(ui->parityCB->currentElement());
+    serialPort.setDataBits(ui->dataBitsCB->currentElement());
+    serialPort.setFlowControl(ui->flowControlCB->currentElement());
+    serialPort.setStopBits(ui->stopBitsCB->currentElement());
+
+    serialPort.setBaudRate(ui->baudRateCB->currentText().toInt());
+
+
+    QByteArray byteArray;
+    byteArray = ui->plainTextEdit->toPlainText().toUtf8();
+    byteArray.append(HexString::fromHex(ui->terminatorHexEdit->text().toStdString()).c_str());
+    serialPort.write(byteArray);
+    serialPort.close();
 }
